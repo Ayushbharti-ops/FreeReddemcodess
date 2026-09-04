@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Daily Redeem Code</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    padding: 20px;
+    background: #ffffff;
+    color: #222222;
+    font-family: Arial, Helvetica, sans-serif;
+    line-height: 1.6;
+  }
+  .container { max-width: 600px; margin: 0 auto; }
+  h1 { font-size: 26px; margin-bottom: 4px; text-align: center; }
+  .date { text-align: center; color: #555555; margin-bottom: 20px; font-size: 14px; }
+  p { font-size: 15px; color: #333333; }
+  h2 {
+    font-size: 18px;
+    margin-top: 30px;
+    margin-bottom: 10px;
+    border-top: 1px solid #dddddd;
+    padding-top: 20px;
+  }
+  .card {
+    border: 1px solid #dddddd;
+    border-radius: 6px;
+    padding: 16px;
+    text-align: center;
+    background: #fafafa;
+  }
+  .code {
+    font-size: 22px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-bottom: 12px;
+    word-break: break-all;
+  }
+  button {
+    padding: 10px 18px;
+    font-size: 14px;
+    border: 1px solid #999999;
+    background: #ffffff;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  button:active { background: #eeeeee; }
+  .notice {
+    font-size: 16px;
+    font-weight: bold;
+    color: #b00000;
+    margin-top: 16px;
+  }
+  .disclaimer { font-size: 12px; color: #888888; margin-top: 10px; }
+  .copied-msg { font-size: 13px; color: #2a7a2a; margin-top: 8px; min-height: 16px; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <h1>Daily Redeem Code</h1>
+  <div class="date" id="currentDate">Loading date...</div>
+
+  <p>
+    Welcome to Daily Redeem Code, a simple page that posts a new code every single day.
+    Each day, a fresh code is generated automatically and displayed below, and it stays
+    the same until midnight, when a brand new code takes its place. There is nothing to
+    download, no account to create, and no login required — the page simply refreshes
+    its code once every 24 hours based on the current date.
+  </p>
+
+  <p>
+    The code shown here follows a common style used by many games and platforms, made
+    up of letters and numbers grouped into short blocks separated by dashes. This format
+    is easy to read and easy to type or copy into a text field. You can use the "Copy Code"
+    button below to quickly copy the code to your clipboard without having to select the
+    text manually.
+  </p>
+
+  
+
+  <h2>Today's Redeem Code</h2>
+  <div class="card">
+    <div class="code" id="redeemCode">Loading...</div>
+    <button id="copyBtn" onclick="copyCode()">Copy Code</button>
+    <div class="copied-msg" id="copiedMsg"></div>
+    <div class="notice">If this code doesn't work, please check back tomorrow for a new one!</div>
+    <div class="disclaimer">
+      
+      It is n
+    </div>
+  </div>
+
+</div>
+
+<script>
+  var CHARS = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+  function seededRandom(seed) {
+    var s = seed;
+    return function () {
+      s = (s * 9301 + 49297) % 233280;
+      return s / 233280;
+    };
+  }
+
+  function getTodaySeed() {
+    var now = new Date();
+    return now.getFullYear() * 10000 + (now.getMonth() + 1) * 100 + now.getDate();
+  }
+
+  function generateCode() {
+    var rand = seededRandom(getTodaySeed());
+    var blocks = [];
+    for (var b = 0; b < 3; b++) {
+      var block = "";
+      for (var i = 0; i < 4; i++) {
+        var index = Math.floor(rand() * CHARS.length);
+        block += CHARS.charAt(index);
+      }
+      blocks.push(block);
+    }
+    return blocks.join("-");
+  }
+
+  function updatePage() {
+    var now = new Date();
+    var days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+    var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+    var dateText = days[now.getDay()] + ", " + months[now.getMonth()] + " " + now.getDate() + ", " + now.getFullYear();
+
+    document.getElementById("currentDate").textContent = dateText;
+    document.getElementById("redeemCode").textContent = generateCode();
+  }
+
+  function copyCode() {
+    var code = document.getElementById("redeemCode").textContent;
+    var msg = document.getElementById("copiedMsg");
+    var tempInput = document.createElement("textarea");
+    tempInput.value = code;
+    tempInput.style.position = "fixed";
+    tempInput.style.opacity = "0";
+    document.body.appendChild(tempInput);
+    tempInput.focus();
+    tempInput.select();
+
+    var success = false;
+    try {
+      success = document.execCommand("copy");
+    } catch (e) {
+      success = false;
+    }
+    document.body.removeChild(tempInput);
+
+    msg.textContent = success ? "Copied!" : "Could not copy, please select manually.";
+    setTimeout(function () { msg.textContent = ""; }, 2000);
+  }
+
+  updatePage();
+  var lastDay = new Date().getDate();
+  setInterval(function () {
+    var nowDay = new Date().getDate();
+    if (nowDay !== lastDay) {
+      lastDay = nowDay;
+      updatePage();
+    }
+  }, 30000);
+</script>
+
+</body>
+</html>
